@@ -1,0 +1,2 @@
+echo g++ -std=c++17 SecOrdCone_VarConsOrder_Bisection_MP.cpp -I /home/daniel/git/EiCOS/include/ -L /home/daniel/git/EiCOS/ -l eicos_LDBL -Wl,-rpath,/home/daniel/git/EiCOS/ -Ofast -o SecOrdCone_VarConsOrder_Bisection_LDBL.exe
+g++ -std=c++17 SecOrdCone_VarConsOrder_Bisection_MP.cpp -I /home/daniel/git/EiCOS/include/ -L /home/daniel/git/EiCOS/ -l eicos_LDBL -Wl,-rpath,/home/daniel/git/EiCOS/ -Ofast -o SecOrdCone_VarConsOrder_Bisection_LDBL.exe
