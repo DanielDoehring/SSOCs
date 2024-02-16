@@ -49,6 +49,12 @@ Code for generating optimal **S**tability Polynomials by **S**econd **O**rder **
 
 ## Usage
 
+It might be required that you give the shell scripts for compling the code executable mode, i.e., 
+```bash
+  chmod +x Compile_Command_MP.sh
+  chmod +x Compile_Command_LDBL.sh
+``` 
+
 ## Acknowledgements
 ![DFG](https://github.com/DanielDoehring/OSPREI/assets/75639095/a0ebb057-a0c5-4dc9-96df-03ac74894d2a)
 
