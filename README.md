@@ -1,2 +1,2 @@
 # SSOCs
-Stability Polynomials by Second Order Cones
+Stability polynomials by Second Order ConeS
