@@ -35,16 +35,16 @@ int main(int argc, char *argv[]) {
   const std::string EvalFileName = std::string(argv[3]);
 
   // If NumStages is supplied, use it, otherwise use NumStageEvals
-  const int NumStages = argc == 5 ? std::stoi(argv[5]) : NumStageEvals;
+  const int NumStages = argc == 5 ? std::stoi(argv[4]) : NumStageEvals;
 
   const int NumCoeffs = NumStageEvals - 5;
   // Number of optimization variables;
   // increased by one due to dummy variable required for EiCOS
   const int NumOpt = NumCoeffs + 1;
 
-  std::cout << std::endl << "Datatype in use has " << std::numeric_limits<float_type>::digits10 
+  std::cout << std::endl << "Datatype in use has " << std::numeric_limits<float_type>::digits10
             << " significant digits." << std::endl;
-  
+
   std::cout.precision(5);
   std::cout << "Smallest number roughly of scale " << static_cast<float_type>(1)/factorial(NumStageEvals) << std::endl;
   std::cout.precision(15); // Some "not too busy" value
@@ -113,7 +113,7 @@ int main(int argc, char *argv[]) {
   delete EigValsPowers;
 
   /// Timestep-independent variables ///
-  // Array with dimensions of cones 
+  // Array with dimensions of cones
   Eigen::Vector<int, Eigen::Dynamic> q;
   q.resize(NumEigVals);
   for(size_t i = 0; i < NumEigVals; i++)
@@ -167,10 +167,11 @@ int main(int argc, char *argv[]) {
     }
   EiCOS::Solver solver(G_Dense.sparseView(), A, c, h, b, q);
 
-  // TODO: Divide k1, k2 by c_{S-3} (if different from 1)
+  // c_{S-3}
+  const float_type cS3 = 1.0;
   // Constants arising from the particular form of Butcher tableau chosen for the 4th order PERK methods
-  const float_type k1 = static_cast<float_type>(0.001055026310046423);
-  const float_type k2 = static_cast<float_type>(0.03726406530405851);
+  const float_type k1 = static_cast<float_type>(0.001055026310046423/cS3);
+  const float_type k2 = static_cast<float_type>(0.03726406530405851/cS3);
 
   const int NumC = NumStages - 5;
   // Choice of timesteps:  Uniformaly ascending timesteps
@@ -186,7 +187,7 @@ int main(int argc, char *argv[]) {
     for(size_t i = 0; i < NumEigVals; i++) {
       h(3 * i + 1) = static_cast<float_type>(1.); // + 1 since this is the real part
       h(3 * i + 2) = static_cast<float_type>(0.);
-      
+
       for(size_t j = 0; j < ConsOrder; j++) {
         h(3 * i + 1) += pow(dt, j+1) * EigValsPowersReal(i, j);
         h(3 * i + 2) += pow(dt, j+1) * EigValsPowersImag(i, j);
@@ -197,12 +198,12 @@ int main(int argc, char *argv[]) {
 
       //G_Dense(3 * i, 0) = -1.; // This acts on the dummy variable
       for(size_t j = 1; j < NumOpt; j++) {
-        G_Dense(3 * i + 1, j) = -c_Free_Flipped[j-1] * (k2 * pow(dt, j+ConsOrder) * EigValsPowersReal(i, j+ConsOrder-1) + 
-                                                        k1 * pow(dt, j+ConsOrder+1) * EigValsPowersReal(i, j+ConsOrder) * 
+        G_Dense(3 * i + 1, j) = -c_Free_Flipped[j-1] * (k2 * pow(dt, j+ConsOrder) * EigValsPowersReal(i, j+ConsOrder-1) +
+                                                        k1 * pow(dt, j+ConsOrder+1) * EigValsPowersReal(i, j+ConsOrder) *
                                                         // normalize with same factorial
                                                         (j+ConsOrder+1));
-        G_Dense(3 * i + 2, j) = -c_Free_Flipped[j-1] * (k2 * pow(dt, j+ConsOrder) * EigValsPowersImag(i, j+ConsOrder-1) + 
-                                                        k1 * pow(dt, j+ConsOrder+1) * EigValsPowersImag(i, j+ConsOrder) * 
+        G_Dense(3 * i + 2, j) = -c_Free_Flipped[j-1] * (k2 * pow(dt, j+ConsOrder) * EigValsPowersImag(i, j+ConsOrder-1) +
+                                                        k1 * pow(dt, j+ConsOrder+1) * EigValsPowersImag(i, j+ConsOrder) *
                                                         // normalize with same factorial
                                                         (j+ConsOrder+1));
       }
