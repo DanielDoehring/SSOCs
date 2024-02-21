@@ -47,6 +47,8 @@ Code for generating optimal **S**tability Polynomials by **S**econd **O**rder **
 
 ## Dependencies
 
+To be able to use `SSOCs` you need to compile the shared library `libeicos_MP.so` of [my fork](https://github.com/DanielDoehring/EiCOS) from the [`EiCOS` repository](https://github.com/EmbersArc/EiCOS).
+
 ## Usage
 
 It might be required that you give the shell scripts for compling the code executable mode, i.e., 
