@@ -68,6 +68,8 @@ To build `EiCOS` you need `Cmake` to be installed on your system, which is the c
 
 To be able to use `SSOCs` you need to compile the shared library `libeicos_MP.so` of [my fork](https://github.com/DanielDoehring/EiCOS) from the [`EiCOS` repository](https://github.com/EmbersArc/EiCOS).
 After installing `Eigen3` and the Boost multiprecision library you need to `cd` to the directory where you downloaded or forked `EiCOS`.
+It is assumed that this is `~/git/EiCOS/` in the compile scripts.
+
 Then, execute 
 ```bash
 cmake -DCMAKE_BUILD_TYPE=Release .
@@ -87,11 +89,33 @@ A successful output should look like this:
 
 ## Compiling `SSOCs`
 
-It might be required that you give the shell script for compling the code executable mode, i.e., 
+It might be required that you give the shell script for compiling the code executable mode, i.e., 
 ```bash
-  chmod +x Compile_Command_MP.sh
+chmod +x Compile_Command_MP.sh
 ``` 
+
+If you installed `EiCOS` not in `~/git/EiCOS` you need to exchange that path wherever it occurrs in `Compile_Command_MP.sh`.
+Then, you can simply execute 
+```bash
+./Compile_Command_MP.sh
+```
+which should give you the executable `SSOCs.exe`.
+Again, it might be required that you make this executable, i.e., 
+```bash
+chmod +x SSOCs.exe
+```
+
 ## Usage
+
+To generate the fourth order accurate stability polynomial for the fourth order Paired-Explicit Runge-Kutta schemes type
+```bash
+./SSOCs.exe <Degree> <dtMax> <path/to/spectrum/file> <OPTIONAL:Stages>
+```
+where `<Degree`> needs to be exchanged for the stability polynomial degree, an integer > 6. 
+<dtMax>  is the maximum timestep that may be possible. In principle this can be chosen arbitrarily large, which slows down the optimization. Supplying a too small value gives wrong results if the true admissible timestep is larger.
+<path/to/spectrum/file> is the path to the file with the eigenvalues used for constraining the stability polynomial. The file should contain the eigenvalues should that one eigenvalue is there per row with syntax `Re(lambda)+Im(lambda)i` to allow correct processing.
+The last argument is optional and may be supplied to obtain the Butcher array coefficients of a method with <Degree> stage-evaluations which is embedded into a <Stages> stage overall paired-explicit Runge-Kutta method.
+
 
 ## Acknowledgements
 ![DFG](https://github.com/DanielDoehring/OSPREI/assets/75639095/a0ebb057-a0c5-4dc9-96df-03ac74894d2a)
