@@ -133,7 +133,7 @@ int main(int argc, char *argv[]) {
   /// Timestep related variables ///
   float_type dtMin = static_cast<float_type>(0.);
   // TODO: This is somewhat problem dependent, the larger the dt the larger the bisection gap
-  const float_type dtEps = static_cast<float_type>(1e-6);
+  const float_type dtEps = static_cast<float_type>(1e-9);
   float_type dt;
 
   /// Variables depending on time ///
