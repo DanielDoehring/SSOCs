@@ -111,10 +111,11 @@ To generate the fourth order accurate stability polynomial for the fourth order 
 ```bash
 ./SSOCs.exe <Degree> <dtMax> <path/to/spectrum/file> <OPTIONAL:Stages>
 ```
-where `<Degree`> needs to be exchanged for the stability polynomial degree, an integer > 6. 
-<dtMax>  is the maximum timestep that may be possible. In principle this can be chosen arbitrarily large, which slows down the optimization. Supplying a too small value gives wrong results if the true admissible timestep is larger.
-<path/to/spectrum/file> is the path to the file with the eigenvalues used for constraining the stability polynomial. The file should contain the eigenvalues should that one eigenvalue is there per row with syntax `Re(lambda)+Im(lambda)i` to allow correct processing.
-The last argument is optional and may be supplied to obtain the Butcher array coefficients of a method with <Degree> stage-evaluations which is embedded into a <Stages> stage overall paired-explicit Runge-Kutta method.
+where 
+* `<Degree>` needs to be exchanged for the stability polynomial degree, an integer > 6. 
+* `<dtMax>` is the maximum timestep that may be possible. In principle this can be chosen arbitrarily large, which slows down the optimization. Supplying a too small value gives wrong results if the true admissible timestep is larger.
+* `<path/to/spectrum/file>` is the path to the file with the eigenvalues used for constraining the stability polynomial. The file should contain the eigenvalues should that one eigenvalue is there per row with syntax `Re(lambda)+Im(lambda)i` to allow correct processing.
+* The last argument is optional and may be supplied to obtain the Butcher array coefficients of a method with `<Degree>` stage-evaluations which is embedded into a `<Stages>` stage overall paired-explicit Runge-Kutta method.
 
 
 ## Acknowledgements
