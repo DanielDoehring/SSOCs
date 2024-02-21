@@ -43,7 +43,7 @@
         .....  .                    ::::::::................:::::.
 ```
 
-Code for generating optimal **S**tability Polynomials by **S**econd **O**rder **C**one**s**
+Code for generating optimal **S**tability Polynomials by **S**econd **O**rder **C**one**s** in arbitrary precision.
 
 ## Dependencies
 
