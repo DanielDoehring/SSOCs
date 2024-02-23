@@ -94,22 +94,23 @@ It might be required that you give the shell script for compiling the code execu
 chmod +x *.sh
 ``` 
 
-If you installed `EiCOS` not in `~/git/EiCOS` you need to exchange that path wherever it occurrs in `Compile_Command_MP.sh`.
+If you installed `EiCOS` not in `~/git/EiCOS` you need to exchange that path wherever it occurrs in `Compile_SSOCs_MP.sh`.
 Then, you can simply execute 
 ```bash
-./Compile_Command_MP.sh
+./Compile_SSOCs_MP.sh
+./Compile_SSOCs_PERK4_MP.sh
 ```
 which should give you the executable `SSOCs.exe`.
 Again, it might be required that you make this executable, i.e., 
 ```bash
-chmod +x SSOCs.exe
+chmod +x *.exe
 ```
 
 ## Usage
 
 To generate the fourth order accurate stability polynomial for the fourth order Paired-Explicit Runge-Kutta schemes type
 ```bash
-./SSOCs.exe <Degree> <dtMax> <path/to/spectrum/file> <OPTIONAL:Stages>
+./SSOCs_PERK4.exe <Degree> <dtMax> <path/to/spectrum/file> <OPTIONAL:Stages>
 ```
 where 
 * `<Degree>` needs to be exchanged for the stability polynomial degree, an integer > 6. 
