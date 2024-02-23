@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <algorithm> // std::reverse
 
 #include <complex>
 #include <boost/multiprecision/cpp_complex.hpp>
@@ -26,30 +27,38 @@ inline float_type factorial(const size_t n) {
 }
 
 int main(int argc, char *argv[]) {
-  assert(argc >= 5);
+  assert(argc >= 4); // Order is NOT variable for this case!
   const int NumStageEvals = std::stoi(argv[1]);
 
-  const int ConsOrder     = std::stoi(argv[2]); // Note: for PERK4 you need to use SSOCs_PERK4.cpp
+  const int ConsOrder     = 4; // This optimization problem is fixed for my special case of 4th order PERK methods
 
-  float_type dtMax        = static_cast<float_type>(std::stod(argv[3]));
+  float_type dtMax        = static_cast<float_type>(std::stod(argv[2]));
   std::cout << "Supplied dtMax: " << dtMax << std::endl;
 
-  const std::string EvalFileName = std::string(argv[4]);
+  const std::string EvalFileName = std::string(argv[3]);
 
   // Optional argument for minimal timestep to speed up convergence of the bisection
-  float_type dtMin = argc >= 6 ? static_cast<float_type>(std::stod(argv[5])) : static_cast<float_type>(0.);
+  float_type dtMin = argc >= 5 ? static_cast<float_type>(std::stod(argv[4])) : static_cast<float_type>(0.);
   std::cout << "Supplied dtMin: " << dtMin << std::endl;
 
   // his is somewhat problem dependent, the larger the dt the larger the bisection gap
-  const float_type dtEps = argc == 7 ? static_cast<float_type>(std::stod(argv[6])): static_cast<float_type>(1e-6);
+  const float_type dtEps = argc == 6 ? static_cast<float_type>(std::stod(argv[5])): static_cast<float_type>(1e-6);
   std::cout << "Supplied dtEps: " << dtEps << std::endl;
 
-  const int NumCoeffs = NumStageEvals - ConsOrder; // Number of coefficients in polynomial
-  const int NumOpt = NumCoeffs + 1; // Number of optimization variables, increased by one due to dummy variable
+  // If NumStages is supplied, use it, otherwise use NumStageEvals
+  const int NumStages = argc >= 7 ? std::stoi(argv[6]) : NumStageEvals;
+  assert(NumStages >= NumStageEvals);
 
-  std::cout << std::endl << "Datatype in use has " << std::numeric_limits<float_type>::digits10 << " significant digits." << std::endl;
+  const int NumCoeffs = NumStageEvals - 5;
+  // Number of optimization variables;
+  // increased by one due to dummy variable required for EiCOS
+  const int NumOpt = NumCoeffs + 1;
+
+  std::cout << std::endl << "Datatype in use has " << std::numeric_limits<float_type>::digits10
+            << " significant digits." << std::endl;
+
   std::cout.precision(5);
-  std::cout << "Smallest number of scale " << static_cast<float_type>(1)/factorial(NumStageEvals) << std::endl;
+  std::cout << "Smallest number roughly of scale " << static_cast<float_type>(1)/factorial(NumStageEvals) << std::endl;
   std::cout.precision(15); // Some "not too busy" value
 
   int i = 0;
@@ -85,6 +94,7 @@ int main(int argc, char *argv[]) {
 
   // Dynamically allocate 'EigValsPowers' to be able to delete later (save memory)
   auto EigValsPowers = new Eigen::Matrix<complex_type, Eigen::Dynamic, Eigen::Dynamic>;
+  // Do not safe zero'th power = 1
   EigValsPowers->resize(NumEigVals, NumStageEvals);
   for(size_t i = 0; i < NumEigVals; i++) {
     for(size_t j = 0; j < NumStageEvals; j++) {
@@ -105,14 +115,17 @@ int main(int argc, char *argv[]) {
     Factorial = factorial(j + 1); // Compute only once per j
     for(size_t i = 0; i < NumEigVals; i++) {
       EigValsPowersReal(i, j) = static_cast<float_type>((*EigValsPowers)(i, j).real()) / Factorial;
+      //EigValsPowersReal(i, j) = static_cast<float_type>((*EigValsPowers)(i, j).real());
+
       EigValsPowersImag(i, j) = static_cast<float_type>((*EigValsPowers)(i, j).imag()) / Factorial;
+      //EigValsPowersImag(i, j) = static_cast<float_type>((*EigValsPowers)(i, j).imag());
     }
   }
 
   delete EigValsPowers;
 
   /// Timestep-independent variables ///
-  // Array with dimensions of cones 
+  // Array with dimensions of cones
   Eigen::Vector<int, Eigen::Dynamic> q;
   q.resize(NumEigVals);
   for(size_t i = 0; i < NumEigVals; i++)
@@ -163,6 +176,24 @@ int main(int argc, char *argv[]) {
     }
   EiCOS::Solver solver(G_Dense.sparseView(), A, c, h, b, q);
 
+  // c_{S-3}
+  const float_type cS3 = 1.0;
+  // Constants arising from the particular form of Butcher tableau chosen for the 4th order PERK methods
+  const float_type k1 = static_cast<float_type>(0.001055026310046423/cS3);
+  const float_type k2 = static_cast<float_type>(0.03726406530405851/cS3);
+
+  const int NumC = NumStages - 5;
+  // Choice of timesteps:  Uniformaly ascending timesteps
+  std::vector<float_type> c_Free_Flipped(NumC, 0);
+  for (int i = 0; i < NumC; ++i) {
+    // Linear increasing
+    //c_Free_Flipped[i] = static_cast<float_type>((NumC - i) / (NumC + 1.0));
+    // Quadratically increasing
+    //c_Free_Flipped[i] = static_cast<float_type>((NumC - i) / (NumC + 1.0) * (NumC - i) / (NumC + 1.0));
+    // Constant
+    c_Free_Flipped[i] = static_cast<float_type>(1.0);
+  }
+
   float_type t;
   while(dtMax - dtMin > dtEps) {
     dt = static_cast<float_type>(0.5) * (dtMax + dtMin);
@@ -170,16 +201,25 @@ int main(int argc, char *argv[]) {
     for(size_t i = 0; i < NumEigVals; i++) {
       h(3 * i + 1) = static_cast<float_type>(1.); // + 1 since this is the real part
       h(3 * i + 2) = static_cast<float_type>(0.);
-      
+
       for(size_t j = 0; j < ConsOrder; j++) {
         h(3 * i + 1) += pow(dt, j+1) * EigValsPowersReal(i, j);
         h(3 * i + 2) += pow(dt, j+1) * EigValsPowersImag(i, j);
       }
+      // Addition for 4th order PERK methods
+      h(3 * i + 1) += k1 * pow(dt, 5) * EigValsPowersReal(i, 4) * factorial(5);
+      h(3 * i + 2) += k1 * pow(dt, 5) * EigValsPowersImag(i, 4) * factorial(5);
 
       //G_Dense(3 * i, 0) = -1.; // This acts on the dummy variable
       for(size_t j = 1; j < NumOpt; j++) {
-        G_Dense(3 * i + 1, j) = -pow(dt, j+ConsOrder) * EigValsPowersReal(i, j+ConsOrder-1);
-        G_Dense(3 * i + 2, j) = -pow(dt, j+ConsOrder) * EigValsPowersImag(i, j+ConsOrder-1);
+        G_Dense(3 * i + 1, j) = -c_Free_Flipped[j-1] * (k2 * pow(dt, j+ConsOrder) * EigValsPowersReal(i, j+ConsOrder-1) +
+                                                        k1 * pow(dt, j+ConsOrder+1) * EigValsPowersReal(i, j+ConsOrder) *
+                                                        // normalize with same factorial
+                                                        (j+ConsOrder+1));
+        G_Dense(3 * i + 2, j) = -c_Free_Flipped[j-1] * (k2 * pow(dt, j+ConsOrder) * EigValsPowersImag(i, j+ConsOrder-1) +
+                                                        k1 * pow(dt, j+ConsOrder+1) * EigValsPowersImag(i, j+ConsOrder) *
+                                                        // normalize with same factorial
+                                                        (j+ConsOrder+1));
       }
     }
 
@@ -203,19 +243,30 @@ int main(int argc, char *argv[]) {
 
   t_gamma = solver.solution();
 
-  for(size_t i = 1; i < NumOpt; i++) {  // Do not rescale stability value
+  for(size_t i = 1; i < NumOpt; i++) { // Do not rescale stability value (i=0)
     t_gamma(i) /= factorial(i + ConsOrder);
   }
 
-  std::cout << "Values of monomial coefficients" << std::endl;
+  std::vector<float_type> A_free(NumCoeffs, 42);
+  A_free[0] = t_gamma[1];
+  int l = 2;
+  for (int i = 5; i < NumStageEvals - 1; ++i) {
+    A_free[l-1] = t_gamma[l] / t_gamma[l - 1];
+    l++;
+  }
 
-  const std::string filename = "gamma_" + std::to_string(ConsOrder) + "_" + std::to_string(NumStageEvals) + ".txt";
-  //const std::string filename = "gamma_" + std::to_string(NumStageEvals) + ".txt";
+  // Flip A_free to have ascending order
+  std::reverse(A_free.begin(), A_free.end());
+
+  std::cout << "Values of coefficients" << std::endl;
+
+  const std::string filename = "a_" + std::to_string(NumStageEvals) + "_" + std::to_string(NumStages) + ".txt";
+  //const std::string filename = "a_" + std::to_string(NumStageEvals) + ".txt";
   std::ofstream gamma_file(filename);
-  for(size_t i = 1; i < NumOpt; i++) { // Omit stability value (first position)
+  for(size_t i = 0; i < NumOpt-1; i++) { // Omit stability value (first position)
     std::stringstream StringStr; // On purpose within loop (automatic reset)
     StringStr << std::setprecision(std::numeric_limits<float_type>::max_digits10);
-    StringStr << t_gamma(i);
+    StringStr << A_free[i];
     gamma_file << StringStr.str();
     std::cout << StringStr.str() << std::endl;
     if(i != NumOpt - 1)

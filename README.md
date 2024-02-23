@@ -91,7 +91,7 @@ A successful output should look like this:
 
 It might be required that you give the shell script for compiling the code executable mode, i.e., 
 ```bash
-chmod +x Compile_Command_MP.sh
+chmod +x *.sh
 ``` 
 
 If you installed `EiCOS` not in `~/git/EiCOS` you need to exchange that path wherever it occurrs in `Compile_Command_MP.sh`.
