@@ -118,6 +118,10 @@ where
 * `<path/to/spectrum/file>` is the path to the file with the eigenvalues used for constraining the stability polynomial. The file should contain the eigenvalues should that one eigenvalue is there per row with syntax `Re(lambda)+Im(lambda)i` to allow correct processing.
 * The last argument is optional and may be supplied to obtain the Butcher array coefficients of a method with `<Degree>` stage-evaluations which is embedded into a `<Stages>` stage overall paired-explicit Runge-Kutta method.
 
+## Affiliation
+![rwth_acom_en_rgb_cropped](https://github.com/DanielDoehring/SSOCs/assets/75639095/50d979dc-71ac-45a6-b580-ae23c9f87835)
+
+This code was developed at the Institute of [Applied and Computational Mathematics (ACoM) at RWTH Aachen University](https://www.acom.rwth-aachen.de/).
 
 ## Acknowledgements
 This code is a result of research performed in the research unit "Structure-Preserving Numerical Methods for Bulk- and
