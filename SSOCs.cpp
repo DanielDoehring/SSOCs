@@ -9,12 +9,10 @@
 #include <boost/multiprecision/cpp_complex.hpp>
 //#include <boost/multiprecision/cpp_bin_float.hpp> // For quad, oct precision
 
-//using float_type = long double;
-//using float_type   = boost::multiprecision::cpp_dec_float_50;
 using float_type = boost::multiprecision::number<boost::multiprecision::cpp_dec_float<40>>;
+//using float_type = long double;
 
 using complex_type = std::complex<float_type>;
-//using complex_type = boost::multiprecision::cpp_complex_50;
 
 
 // Chose float_type sinze even long long int runs out of "space" at ~22 digits

@@ -4,19 +4,34 @@ CXXFLAGS=-std=c++17 -I $(HOME)/git/EiCOS/include/ -L $(HOME)/git/EiCOS/ -Wl,-rpa
 LIB_MP=-l eicos_MP
 LIB_LDBL=-l eicos_LDBL 
 
-SSOCsMP_TARGET=SSOCs.exe
-SSOCs_PERK4_MP_TARGET=SSOCs_PERK4.exe
+# Standard SSOCs
+SSOCs_MP_TARGET=SSOCs_MP
+SSOCs_LDBL_TARGET=SSOCs_LDBL
 
-all: $(SSOCsMP_TARGET) $(SSOCs_PERK4_MP_TARGET)
+# SSOCs for PERK-4 stability polynomials
+SSOCs_PERK4_MP_TARGET=SSOCs_PERK4_MP
+SSOCs_PERK4_LDBL_TARGET=SSOCs_PERK4_LDBL
 
-$(SSOCsMP_TARGET): SSOCs.cpp
-	$(CXX) $< $(CXXFLAGS) -o $@ $(LIB_MP)
+all: $(SSOCs_MP_TARGET) $(SSOCs_LDBL_TARGET) $(SSOCs_PERK4_MP_TARGET) $(SSOCs_PERK4_LDBL_TARGET)
+
+MP_TARGETS: $(SSOCs_MP_TARGET) $(SSOCs_PERK4_MP_TARGET)
+LDBL_TARGETS: $(SSOCs_LDBL_TARGET) $(SSOCs_PERK4_LDBL_TARGET)
+
+$(SSOCs_MP_TARGET): SSOCs.cpp
+	$(CXX) $< $(CXXFLAGS) -o $@.exe $(LIB_MP)
+
+$(SSOCs_LDBL_TARGET): SSOCs.cpp
+	$(CXX) $< $(CXXFLAGS) -o $@.exe $(LIB_LDBL)
+
 
 $(SSOCs_PERK4_MP_TARGET): SSOCs_PERK4.cpp
-	$(CXX) $< $(CXXFLAGS) -o $@ $(LIB_MP)
+	$(CXX) $< $(CXXFLAGS) -o $@.exe $(LIB_MP)
+
+$(SSOCs_PERK4_LDBL_TARGET): SSOCs_PERK4.cpp
+	$(CXX) $< $(CXXFLAGS) -o $@.exe $(LIB_LDBL)
 
 clean:
-	rm -f $(SSOCsMP_TARGET) $(SSOCs_PERK4_MP_TARGET)
+	rm -f *.exe
 
 cleanout:
-	rm *.txt
+	rm -f *.txt *.exe
