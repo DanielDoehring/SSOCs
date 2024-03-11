@@ -62,19 +62,19 @@ sudo apt-get install libboost-all-dev
 although this brings in the whole Boost library.
 
 ### CMake
-To build `EiCOS` you need `Cmake` to be installed on your system, which is the case on most Linux distributions.
+To build `EiCOS` you need `CMake` to be installed on your system, which is the case on most Linux distributions.
 
 ### EiCOS
 
 To be able to use `SSOCs` you need to compile the shared library `libeicos_MP.so` of [my fork](https://github.com/DanielDoehring/EiCOS) from the [`EiCOS` repository](https://github.com/EmbersArc/EiCOS).
 After installing `Eigen3` and the Boost multiprecision library you need to `cd` to the directory where you downloaded or forked `EiCOS`.
-It is assumed that this is `~/git/EiCOS/` in the compile scripts.
+It is assumed that this is `~/git/EiCOS/` in the compile scripts, where `~` is synonymous with `$HOME`.
 
 Then, execute 
 ```bash
 cmake -DCMAKE_BUILD_TYPE=Release .
 ```
-to generate the make files.
+to generate the make files with release flags.
 Then type 
 ```bash
 make
