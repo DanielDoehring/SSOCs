@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
   float_type dtMin = argc >= 5 ? static_cast<float_type>(std::stod(argv[4])) : static_cast<float_type>(0.);
   std::cout << "Supplied dtMin: " << dtMin << std::endl;
 
-  // his is somewhat problem dependent, the larger the dt the larger the bisection gap
+  // This is somewhat problem dependent, the larger the dt the larger the bisection gap
   const float_type dtEps = argc == 6 ? static_cast<float_type>(std::stod(argv[5])): static_cast<float_type>(1e-6);
   std::cout << "Supplied dtEps: " << dtEps << std::endl;
 
