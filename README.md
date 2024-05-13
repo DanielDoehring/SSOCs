@@ -118,7 +118,7 @@ For the PERK4 schemes (`SSOCs_PERK4.cpp`), this needs to be an integer > 5, whil
 ## Credit
 
 If you use the implementations provided here, please also cite this repository as
-
+```
 @misc{doehring2024ssocs,
   title={{SSOCs}: Arbitrary Precision Stability Polynomials by Second Order Cones},
   author={Doehring, Daniel},
@@ -126,6 +126,7 @@ If you use the implementations provided here, please also cite this repository a
   howpublished={\url{https://github.com/DanielDoehring/SSOCs}},
   doi={https://doi.org/10.5281/zenodo.11184359}
 }
+```
 
 ## Affiliation
 ![rwth_acom_en_rgb_cropped](https://github.com/DanielDoehring/SSOCs/assets/75639095/50d979dc-71ac-45a6-b580-ae23c9f87835)
