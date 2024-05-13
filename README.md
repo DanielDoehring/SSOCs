@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/758503799.svg)](https://zenodo.org/doi/10.5281/zenodo.11184359)
+
 # SSOCs
 
 ```
