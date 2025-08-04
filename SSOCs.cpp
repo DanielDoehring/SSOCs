@@ -1,21 +1,21 @@
-#include <eicos_MP.hpp> // For multiprecision version
-//#include <eicos_LDBL.hpp> // For long double version
+//#include <eicos_MP.hpp> // For multiprecision version
+#include <eicos_LDBL.hpp> // For long double version
 
 #include <iostream>
 #include <fstream>
 #include <iomanip>
 
 #include <complex>
-#include <boost/multiprecision/cpp_complex.hpp>
+//#include <boost/multiprecision/cpp_complex.hpp>
 //#include <boost/multiprecision/cpp_bin_float.hpp> // For quad, oct precision
 
-using float_type = boost::multiprecision::number<boost::multiprecision::cpp_dec_float<40>>;
-//using float_type = long double;
+//using float_type = boost::multiprecision::number<boost::multiprecision::cpp_dec_float<40>>;
+using float_type = long double;
 
 using complex_type = std::complex<float_type>;
 
 
-// Chose float_type sinze even long long int runs out of "space" at ~22 digits
+// Chose float_type since even long long int runs out of "space" at ~22 digits
 inline float_type factorial(const size_t n) {
   float_type res = 1;
   for(int i = 1; i <= n; i++)

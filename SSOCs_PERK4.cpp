@@ -1,5 +1,5 @@
-#include <eicos_MP.hpp> // For multiprecision version
-//#include <eicos_LDBL.hpp> // For long double version
+//#include <eicos_MP.hpp> // For multiprecision version
+#include <eicos_LDBL.hpp> // For long double version
 
 #include <iostream>
 #include <fstream>
@@ -7,11 +7,11 @@
 #include <algorithm> // std::reverse
 
 #include <complex>
-#include <boost/multiprecision/cpp_complex.hpp>
+//#include <boost/multiprecision/cpp_complex.hpp>
 //#include <boost/multiprecision/cpp_bin_float.hpp> // For quad, oct precision
 
-using float_type = boost::multiprecision::number<boost::multiprecision::cpp_dec_float<40>>;
-//using float_type = long double; 
+//using float_type = boost::multiprecision::number<boost::multiprecision::cpp_dec_float<40>>;
+using float_type = long double;
 
 using complex_type = std::complex<float_type>;
 
@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
   std::cout << "Supplied dtMin: " << dtMin << std::endl;
 
   // This is somewhat problem dependent, the larger the dt the larger the bisection gap
-  const float_type dtEps = argc == 6 ? static_cast<float_type>(std::stod(argv[5])): static_cast<float_type>(1e-6);
+  const float_type dtEps = argc >= 6 ? static_cast<float_type>(std::stod(argv[5])): static_cast<float_type>(1e-10);
   std::cout << "Supplied dtEps: " << dtEps << std::endl;
 
   // If NumStages is supplied, use it, otherwise use NumStageEvals
@@ -205,6 +205,7 @@ int main(int argc, char *argv[]) {
         h(3 * i + 2) += pow(dt, j+1) * EigValsPowersImag(i, j);
       }
       // Addition for 4th order PERK methods
+      // Undo factorial normalization
       h(3 * i + 1) += k1 * pow(dt, 5) * EigValsPowersReal(i, 4) * factorial(5);
       h(3 * i + 2) += k1 * pow(dt, 5) * EigValsPowersImag(i, 4) * factorial(5);
 
@@ -258,8 +259,8 @@ int main(int argc, char *argv[]) {
 
   std::cout << "Values of coefficients" << std::endl;
 
-  const std::string filename = "a_" + std::to_string(NumStageEvals) + "_" + std::to_string(NumStages) + ".txt";
-  //const std::string filename = "a_" + std::to_string(NumStageEvals) + ".txt";
+  //const std::string filename = "a_" + std::to_string(NumStageEvals) + "_" + std::to_string(NumStages) + ".txt";
+  const std::string filename = "a_" + std::to_string(NumStageEvals) + ".txt";
   std::ofstream gamma_file(filename);
   for(size_t i = 0; i < NumOpt-1; i++) { // Omit stability value (first position)
     std::stringstream StringStr; // On purpose within loop (automatic reset)
