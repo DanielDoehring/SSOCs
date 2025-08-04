@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/758503799.svg)](https://zenodo.org/doi/10.5281/zenodo.11184359)
+
 # SSOCs
 
 ```
@@ -112,6 +114,19 @@ For the PERK4 schemes (`SSOCs_PERK4.cpp`), this needs to be an integer > 5, whil
 * `<dtMax>` is the maximum timestep that may be possible. In principle this can be chosen arbitrarily large, which slows down the optimization. Supplying a too small value gives wrong results if the true admissible timestep is larger.
 * `<path/to/spectrum/file>` is the path to the file with the eigenvalues used for constraining the stability polynomial. The file should contain the eigenvalues should that one eigenvalue is there per row with syntax `Re(lambda)+Im(lambda)i` to allow correct processing.
 * The last argument is optional and may be supplied to obtain the Butcher array coefficients of a method with `<Degree>` stage-evaluations which is embedded into a `<Stages>` stage overall paired-explicit Runge-Kutta method.
+
+## Credit
+
+If you use the implementations provided here, please also cite this repository as
+```bibtex
+@misc{doehring2024ssocs,
+  title={{SSOCs}: Arbitrary Precision Stability Polynomials by Second-Order Cones},
+  author={Doehring, Daniel},
+  year={2024},
+  howpublished={\url{https://github.com/DanielDoehring/SSOCs}},
+  doi={https://doi.org/10.5281/zenodo.11184359}
+}
+```
 
 ## Affiliation
 ![rwth_acom_en_rgb_cropped](https://github.com/DanielDoehring/SSOCs/assets/75639095/50d979dc-71ac-45a6-b580-ae23c9f87835)
