@@ -1,3 +1,4 @@
+[![License: MIT](https://img.shields.io/badge/License-MIT-success.svg)](https://opensource.org/licenses/MIT)
 [![DOI](https://zenodo.org/badge/758503799.svg)](https://zenodo.org/doi/10.5281/zenodo.11184359)
 
 # SSOCs
