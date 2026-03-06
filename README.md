@@ -105,9 +105,19 @@ chmod +x *.exe
 
 ## Usage
 
+### Orders 2, 3, 5, ...
+```bash
+./SSOCs_MP.exe <NumStageEvals> <Degree> <dtMax> <path/to/spectrum/file> <OPTIONAL:dtMin dtEps>
+```
+
+```bash
+./SSOCs_List_MP.exe <NumStageEvalFile> <Degree> <dtMax> <path/to/spectrum/file> <OPTIONAL:dtMin dtEps>
+```
+
+### P-ERK 4
 To generate the fourth order accurate stability polynomial for the fourth order Paired-Explicit Runge-Kutta schemes type
 ```bash
-./SSOCs_PERK4_MP.exe <Degree> <dtMax> <path/to/spectrum/file> <OPTIONAL:Stages>
+./SSOCs_PERK4_MP.exe <Degree> <dtMax> <path/to/spectrum/file> <OPTIONAL:dtMin dtEps>
 ```
 where 
 * `<Degree>` needs to be exchanged for the stability polynomial degree.
