@@ -105,14 +105,17 @@ chmod +x *.exe
 
 ## Usage
 
-### Orders 2, 3, 5, ...
+### Orders 2 and 3
 ```bash
-./SSOCs_MP.exe <NumStageEvals> <Degree> <dtMax> <path/to/spectrum/file> <OPTIONAL:dtMin dtEps>
+./SSOCs_MP.exe <Order> <Degree> <dtMax> <path/to/spectrum/file> <OPTIONAL:dtMin dtEps>
 ```
-
-```bash
-./SSOCs_List_MP.exe <NumStageEvalFile> <Degree> <dtMax> <path/to/spectrum/file> <OPTIONAL:dtMin dtEps>
-```
+where 
+* `<Order>` needs to be exchanged for the order of consistency (`2` or `3`)
+* `<Degree>` needs to be exchanged for the stability polynomial degree.
+* `<dtMax>` is the maximum timestep that may be possible. In principle this can be chosen arbitrarily large, which slows down the optimization. Supplying a too small value gives wrong results if the true admissible timestep is larger.
+* `<path/to/spectrum/file>` is the path to the file with the eigenvalues used for constraining the stability polynomial. The file should contain the eigenvalues should that one eigenvalue is there per row with syntax `Re(lambda)+Im(lambda)i` to allow correct processing.
+* `<dtMin>` (Optional): Mninimum timestep for bisection routine. Can enhance efficiently if guessed not too large, for which the optimization fails. Defaults to `0.0`.
+* `<dtEps>`(Optional): Tolerance when bisection of the timestep stops. Defaults to `1e-6`.
 
 ### P-ERK 4
 To generate the fourth order accurate stability polynomial for the fourth order Paired-Explicit Runge-Kutta schemes type
@@ -122,9 +125,12 @@ To generate the fourth order accurate stability polynomial for the fourth order 
 where 
 * `<Degree>` needs to be exchanged for the stability polynomial degree.
 For the PERK4 schemes (`SSOCs_PERK4.cpp`), this needs to be an integer > 5, while for the general version (`SSOCs.cpp`) also a polynomial with degreee 5 may be optimized.
-* `<dtMax>` is the maximum timestep that may be possible. In principle this can be chosen arbitrarily large, which slows down the optimization. Supplying a too small value gives wrong results if the true admissible timestep is larger.
-* `<path/to/spectrum/file>` is the path to the file with the eigenvalues used for constraining the stability polynomial. The file should contain the eigenvalues should that one eigenvalue is there per row with syntax `Re(lambda)+Im(lambda)i` to allow correct processing.
 * The last argument is optional and may be supplied to obtain the Butcher array coefficients of a method with `<Degree>` stage-evaluations which is embedded into a `<Stages>` stage overall paired-explicit Runge-Kutta method.
+
+### List version
+```bash
+./SSOCs_List_MP.exe <NumStageEvalFile> <Degree> <dtMax> <path/to/spectrum/file> <OPTIONAL:dtMin dtEps>
+```
 
 ## Credit
 
@@ -136,6 +142,22 @@ If you use the implementations provided here, please also cite this repository a
   year={2024},
   howpublished={\url{https://github.com/DanielDoehring/SSOCs}},
   doi={https://doi.org/10.5281/zenodo.11184359}
+}
+```
+
+The original paper where this approach for optimizing stability polynomials has been developed is
+
+```bibtex
+@article{ketcheson2013optimal,
+  title={Optimal stability polynomials for numerical integration of initial value problems},
+  author={Ketcheson, David and Ahmadia, Aron},
+  journal={Communications in Applied Mathematics and Computational Science},
+  volume={7},
+  number={2},
+  pages={247--271},
+  year={2013},
+  publisher={Mathematical Sciences Publishers},
+  doi={10.2140/camcos.2012.7.247}
 }
 ```
 
