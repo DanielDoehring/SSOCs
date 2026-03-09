@@ -107,29 +107,62 @@ chmod +x *.exe
 
 ### Orders 2 and 3
 ```bash
-./SSOCs_MP.exe <Order> <Degree> <dtMax> <path/to/spectrum/file> <OPTIONAL:dtMin dtEps>
+./SSOCs_MP.exe <Degree> <Order> <dtMax> <path/to/spectrum/file> <OPTIONAL:dtMin dtEps>
 ```
 where 
-* `<Order>` needs to be exchanged for the order of consistency (`2` or `3`)
-* `<Degree>` needs to be exchanged for the stability polynomial degree.
+* `<Degree>` is the number of stage evaluations (or stability polynomial degree). This determines the number of optimization variables.
+* `<Order>` is the order of consistency of the method (`2` or `3`). The number of polynomial coefficients is determined by `Degree - Order`.
 * `<dtMax>` is the maximum timestep that may be possible. In principle this can be chosen arbitrarily large, which slows down the optimization. Supplying a too small value gives wrong results if the true admissible timestep is larger.
-* `<path/to/spectrum/file>` is the path to the file with the eigenvalues used for constraining the stability polynomial. The file should contain the eigenvalues should that one eigenvalue is there per row with syntax `Re(lambda)+Im(lambda)i` to allow correct processing.
-* `<dtMin>` (Optional): Mninimum timestep for bisection routine. Can enhance efficiently if guessed not too large, for which the optimization fails. Defaults to `0.0`.
-* `<dtEps>`(Optional): Tolerance when bisection of the timestep stops. Defaults to `1e-6`.
+* `<path/to/spectrum/file>` is the path to the file with the eigenvalues used for constraining the stability polynomial. The file should contain one eigenvalue per row with syntax `Re(lambda)+Im(lambda)i` (e.g., `-5.2-0.3i` or `0+2i`). The number of eigenvalues determines the number of constraints.
+* `<dtMin>` (Optional): Minimum timestep for bisection routine. Can enhance efficiency if guessed appropriately; too large values may cause optimization to fail. Defaults to `0.0`.
+* `<dtEps>` (Optional): Tolerance when bisection of the timestep stops. Defaults to `1e-6`.
 
 ### P-ERK 4
 To generate the fourth order accurate stability polynomial for the fourth order Paired-Explicit Runge-Kutta schemes type
 ```bash
-./SSOCs_PERK4_MP.exe <Degree> <dtMax> <path/to/spectrum/file> <OPTIONAL:dtMin dtEps>
+./SSOCs_PERK4_MP.exe <Degree> <dtMax> <path/to/spectrum/file> <OPTIONAL:dtMin dtEps dtStages>
 ```
 where 
-* `<Degree>` needs to be exchanged for the stability polynomial degree.
-For the PERK4 schemes (`SSOCs_PERK4.cpp`), this needs to be an integer > 5, while for the general version (`SSOCs.cpp`) also a polynomial with degreee 5 may be optimized.
-* The last argument is optional and may be supplied to obtain the Butcher array coefficients of a method with `<Degree>` stage-evaluations which is embedded into a `<Stages>` stage overall paired-explicit Runge-Kutta method.
+* `<Degree>` is the number of stage evaluations (stability polynomial degree). Must be an integer > 5 for the PERK4 version. The order of consistency is fixed at 4 for this specialized scheme.
+* `<dtMax>` is the maximum timestep estimate for the optimization. See general orders section for details.
+* `<path/to/spectrum/file>` is the path to the file with the eigenvalues. See general orders section for file format details.
+* `<dtMin>` (Optional): Minimum timestep for bisection routine. Defaults to `0.0`.
+* `<dtEps>` (Optional): Tolerance when bisection of the timestep stops. Defaults to `1e-10` (tighter tolerance than general orders version).
+* `<Stages>` (Optional): Total number of stages in the final paired-explicit Runge-Kutta method. If supplied, the optimized polynomial with `<Degree>` stage-evaluations is embedded into a `<Stages>` stage overall PERK4 scheme. Must be >= `<Degree>`. If omitted, defaults to `<Degree>`.
 
 ### List version
 ```bash
-./SSOCs_List_MP.exe <NumStageEvalFile> <Degree> <dtMax> <path/to/spectrum/file> <OPTIONAL:dtMin dtEps>
+./SSOCs_List_MP.exe <NumStageEvalFile> <Order> <dtMax> <path/to/spectrum/file> <OPTIONAL:dtMin dtEps>
+```
+where
+* `<NumStageEvalFile>` is the path to a file containing a list of polynomial degrees to optimize. Each integer should be on a separate line. The program will optimize stability polynomials for all degrees specified in this file.
+* `<Order>` is the order of consistency of the methods (`2` or `3`).
+* `<dtMax>` is the maximum timestep for the optimization. See general orders section for details.
+* `<path/to/spectrum/file>` is the path to the file with the eigenvalues. See general orders section for file format details.
+* `<dtMin>` (Optional): Minimum timestep for bisection routine. Defaults to `0.0`.
+* `<dtEps>` (Optional): Tolerance when bisection of the timestep stops. Defaults to `1e-6`.
+
+## Input File Formats
+
+### Eigenvalue Spectrum File
+The eigenvalue file contains one complex eigenvalue per line in the format `Re(λ)+Im(λ)i`. Examples:
+```
+-5.2+0i
+-3.1-2.5i
+-3.1+2.5i
+0+1.5i
+0-1.5i
+-1.0+0i
+```
+The eigenvalues are used to construct stability constraints for the optimization problem. The number of eigenvalues determines the number of inequality constraints in the second-order cone program.
+
+### NumStageEvalFile (List Version)
+A simple text file with one positive integer per line, specifying the polynomial degrees to optimize:
+```
+5
+6
+7
+8
 ```
 
 ## Credit
